@@ -1,19 +1,33 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';  
 import CardList from '../components/CardList';
 // import { robots } from './robots';
 // SearchBox Component
 import SearchBox from '../components/SearchBox';
 import './App.css';
 import Scroll from '../components/Scroll';
+import ErrorBoundry from '../components/ErrorBoundry';
+import { setSearchField } from '../actions';
 
 
+const mapStateToProps = state => {
+    return {
+        searchField : state.searchField 
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onSearchChange : (event) =>dispatch(setSearchField(event.target.value)) 
+    }
+}
 class App extends Component { 
     // declaring a state
     constructor() {
         super() // calling the constructir of component
         this.state = {  // states are robots and search field & are both changeab;
             robots: [],
-            searchfield: ''
+            // searchfield: ''
         }
     }
 
@@ -25,16 +39,14 @@ class App extends Component {
         // getting the users and updating with setState
             .then(users => this.setState({ robots: users }));
     }
-    onSearchChange = (event) => {
-        // Changing the state with this.setState so the search field always gets updated
-        this.setState({ searchfield: event.target.value })
-    }
+    
     render() {
         // Using Object Destructuring
-        const { robots, searchfield } = this.state;
+        const { robots } = this.state;
+        const { searchField, onSearchChange } = this.props;
         const filteredRobots = robots.filter(robot=>{
             //changing the robots according to data entered into search field
-            return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+            return robot.name.toLowerCase().includes(searchField.toLowerCase());
         })
         // checking the robots returned using ternary operator
         return !robots.length ? 
@@ -44,16 +56,16 @@ class App extends Component {
                 <div className="tc"> 
                     <h1 className="f1">Robo Friends</h1>
                     {/* search box component */}
-                    <SearchBox searchChange={this.onSearchChange}/> 
+                    <SearchBox searchChange={onSearchChange}/> 
                     {/* robot which is a test is now pased down as props */}
                     <Scroll>
-                        <CardList robots={filteredRobots}/>
+                        <ErrorBoundry>
+                            <CardList robots={filteredRobots}/>
+                        </ErrorBoundry>
                     </Scroll>
                 </div>
             );
         }
     }
 
-    
-
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);

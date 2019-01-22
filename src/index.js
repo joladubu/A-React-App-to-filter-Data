@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 // Father of other components
-import App from './App';
+import App from './containers/App';
 // importing CardList component which is a parent of card componentimport CardList from './CardList';
 // import CardList from './CardList';
 //importing the card component
